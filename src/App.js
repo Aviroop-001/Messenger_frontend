@@ -1,15 +1,13 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import UserList from "./components/UserList";
-import UserMessages from "./components/UserMessages";
+import MessageDashboard from "./components/MessageDashboard";
 
 function App() {
   return (
     <div className="App">
       <Router>
         <Routes>
-          <Route exact path="/messages" element={<UserList />} />
-          <Route exact path="/messages/:userId" element={UserMessages} />
+          <Route path="/" element={<MessageDashboard />} />
         </Routes>
       </Router>
     </div>

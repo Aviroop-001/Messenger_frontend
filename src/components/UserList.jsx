@@ -8,51 +8,77 @@ import {
   UnorderedList,
   ListItem,
   Button,
+  VStack
 } from "@chakra-ui/react";
 
-function UserList() {
+function UserList({ setSelectedUserId }) {
   const [userIds, setUserIds] = useState([]);
 
-  const fetchUsers = async() => {
+  const fetchUsers = async () => {
     try {
-        const res = await api.get("/api/messages/userIds");
-        setUserIds(res.data);
-        console.log("users fetched!");
+      const res = await api.get("/api/messages/userIds");
+      setUserIds(res.data);
+      console.log("users fetched!");
     } catch (err) {
-        console.log("ERROR_", err);
+      console.log("ERROR_", err);
     }
-  }
+  };
   useEffect(() => {
     fetchUsers();
   }, []);
+  
+  const handleUserClick = (userId) => {
+    console.log(userId);
+    setSelectedUserId(userId);
+  };
 
   return (
     <Box
-      width="15rem"
+      width="35vw"
       border="1px solid red"
       display="flex"
       flexDirection="column"
       justifyContent="center"
       alignItem="center"
+      height="100vh"
     >
       <Heading marginBottom="1rem" textAlign="center">
         User List
       </Heading>
-      <UnorderedList
-        width="90%"
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItem="center"
+      <VStack
+        padding="0.5rem 0px"
+        overflow="visible"
+        overflowY="scroll"
+        height="100%"
+        scrollBehavior="smooth"
       >
-        {userIds.map((userId) => (
-          <ListItem width="100%" key={userId}>
-            <Button width="80%" colorScheme="teal" margin="0.5rem">
-              <Link to={`/${userId}`}>User {userId}</Link>
-            </Button>
-          </ListItem>
-        ))}
-      </UnorderedList>
+        <UnorderedList
+          width="90%"
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItem="center"
+        >
+          {userIds.map((userId) => (
+            <ListItem
+              width="100%"
+              key={userId}
+              display="flex"
+              justifyContent="center"
+              alignItem="center"
+            >
+              <Button
+                width="20rem"
+                colorScheme="teal"
+                margin="0.5rem"
+                onClick={() => handleUserClick(userId)}
+              >
+                User {userId}
+              </Button>
+            </ListItem>
+          ))}
+        </UnorderedList>
+      </VStack>
     </Box>
   );
 }
