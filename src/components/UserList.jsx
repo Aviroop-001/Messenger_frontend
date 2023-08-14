@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+// import { useSocket } from "./socket";
 
 import api from '../api'
 import {
@@ -13,6 +14,9 @@ import {
 
 function UserList({ setSelectedUserId }) {
   const [userIds, setUserIds] = useState([]);
+  const [respondingUser, setRespondingUser] = useState(null);
+
+  // const socket = useSocket();
 
   const fetchUsers = async () => {
     try {
@@ -26,6 +30,24 @@ function UserList({ setSelectedUserId }) {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+//  useEffect(() => {
+//    // Listen for "admin-reply-start" event to show responding notification
+//    socket.on("admin-reply-start", () => {
+//      setRespondingUser(true);
+//    });
+
+//    // Listen for "admin-reply-end" event to clear responding notification
+//    socket.on("admin-reply-end", () => {
+//      setRespondingUser(false);
+//    });
+
+//    return () => {
+//      // Cleanup event listeners
+//      socket.off("admin-reply-start");
+//      socket.off("admin-reply-end");
+//    };
+//  }, [socket]);
   
   const handleUserClick = (userId) => {
     console.log(userId);
@@ -39,7 +61,6 @@ function UserList({ setSelectedUserId }) {
       display="flex"
       flexDirection="column"
       justifyContent="center"
-      alignItem="center"
       height="100vh"
     >
       <Heading marginBottom="1rem" textAlign="center">
@@ -57,7 +78,6 @@ function UserList({ setSelectedUserId }) {
           display="flex"
           flexDirection="column"
           justifyContent="center"
-          alignItem="center"
         >
           {userIds.map((userId) => (
             <ListItem
@@ -65,11 +85,10 @@ function UserList({ setSelectedUserId }) {
               key={userId}
               display="flex"
               justifyContent="center"
-              alignItem="center"
             >
               <Button
                 width="20rem"
-                colorScheme="teal"
+                colorScheme={respondingUser === userId ? "red" : "teal"}
                 margin="0.5rem"
                 onClick={() => handleUserClick(userId)}
               >

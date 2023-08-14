@@ -1,29 +1,41 @@
 import React, { useState } from "react";
 import AdminMessage from "./AdminMessage";
+import { Box, Button, Tag } from "@chakra-ui/react";
+import { useSocket } from "./socket";
 
 function AdminPanel({ userId }) {
   const [isReplying, setIsReplying] = useState(false);
+  const socket = useSocket();
 
   const handleReplyStart = () => {
     setIsReplying(true);
+    socket.emit("admin-reply-start", userId); // Notify other admins in the room
   };
 
   const handleReplyEnd = () => {
     setIsReplying(false);
+    socket.emit("admin-reply-end", userId); // Notify other admins in the room
   };
 
+  // Join the room when component mounts
+  socket.emit("join-room", userId);
+
   return (
-    <div>
+    <Box>
       {isReplying ? (
-        <p>Admin is currently replying to this user.</p>
+        <Tag colorScheme="yellow">Admin is currently responding</Tag>
       ) : (
         <>
-          <button onClick={handleReplyStart}>Start Replying</button>
-          <button onClick={handleReplyEnd}>Finish Replying</button>
+          <Button onClick={handleReplyStart} colorScheme="teal" mr={2}>
+            Start Responding
+          </Button>
+          <Button onClick={handleReplyEnd} colorScheme="red">
+            Finish Responding
+          </Button>
         </>
       )}
       {isReplying && <AdminMessage userId={userId} />}
-    </div>
+    </Box>
   );
 }
 
