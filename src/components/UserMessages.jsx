@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AdminPanel from "./AdminPanel";
-import { Box, Heading, Tag, Input, Button } from "@chakra-ui/react";
+import { Box, Heading, Tag, Input, Button, Tooltip } from "@chakra-ui/react";
 import api from "../api";
 
 function UserMessages({ selectedUserId, agentData, setagentData }) {
@@ -12,7 +12,7 @@ function UserMessages({ selectedUserId, agentData, setagentData }) {
   const fetchMessages = async () => {
     try {
       const res = await api.get(`/api/users/${selectedUserId}`);
-      setMessages(res.data.userMessages);
+      setMessages(res.data);
       setcanReply(res.data.isAccepted);
       console.log("messages fetched!");
     } catch (err) {
@@ -74,8 +74,11 @@ function UserMessages({ selectedUserId, agentData, setagentData }) {
     <div>
       <Heading mb="5" textAlign="center" padding="1px auto">
         User {selectedUserId} Messages
+        <Tooltip label={messages.description || ""}>
+          <Box display='inline-block' fontSize='20px' border='1px solid black' borderRadius='50%' height='1.7rem' width='1.7rem' ml='2rem'>i</Box>
+        </Tooltip>
       </Heading>
-      {messages.map((message) => (
+      {messages.userMessages.map((message) => (
         <Box
           width="fit-content"
           backgroundColor={message.isAgentReply ? "green.200" : "red.200"}
@@ -87,55 +90,57 @@ function UserMessages({ selectedUserId, agentData, setagentData }) {
           {message.messageBody}
         </Box>
       ))}
-      {canReply && 
-      <Box width="80%" mt="10" textAlign="center" padding="1px auto">
-        {/* Pre-formed reply buttons */}
-        <Button
-          colorScheme="blue"
-          variant="outline"
-          onClick={() =>
-            handleSendPreFormedReply("Thank you for reaching out!")
-          }
-        >
-          Thank You
-        </Button>
-        <Button
-          colorScheme="blue"
-          variant="outline"
-          onClick={() =>
-            handleSendPreFormedReply("We'll look into this matter right away.")
-          }
-          ml="3"
-        >
-          Urgent Matter
-        </Button>
-        <Button
-          colorScheme="blue"
-          variant="outline"
-          onClick={() =>
-            handleSendPreFormedReply("Could you please provide more details?")
-          }
-          ml="3"
-        >
-          More Details
-        </Button>
-        <Input
-          placeholder="Enter your reply..."
-          value={replyMessage}
-          onChange={(e) => setReplyMessage(e.target.value)}
-        />
-        <Button colorScheme="teal" onClick={handleSendReply}>
-          Send Reply
-        </Button>
-        <Button
-          colorScheme="red"
-          onClick={() => handleRemoveUser(selectedUserId)}
-          ml="5"
-        >
-          Resolve
-        </Button>
-      </Box>
-      }
+      {canReply && (
+        <Box width="80%" mt="10" textAlign="center" padding="1px auto">
+          {/* Pre-formed reply buttons */}
+          <Button
+            colorScheme="blue"
+            variant="outline"
+            onClick={() =>
+              handleSendPreFormedReply("Thank you for reaching out!")
+            }
+          >
+            Thank You
+          </Button>
+          <Button
+            colorScheme="blue"
+            variant="outline"
+            onClick={() =>
+              handleSendPreFormedReply(
+                "We'll look into this matter right away."
+              )
+            }
+            ml="3"
+          >
+            Urgent Matter
+          </Button>
+          <Button
+            colorScheme="blue"
+            variant="outline"
+            onClick={() =>
+              handleSendPreFormedReply("Could you please provide more details?")
+            }
+            ml="3"
+          >
+            More Details
+          </Button>
+          <Input
+            placeholder="Enter your reply..."
+            value={replyMessage}
+            onChange={(e) => setReplyMessage(e.target.value)}
+          />
+          <Button colorScheme="teal" onClick={handleSendReply}>
+            Send Reply
+          </Button>
+          <Button
+            colorScheme="red"
+            onClick={() => handleRemoveUser(selectedUserId)}
+            ml="5"
+          >
+            Resolve
+          </Button>
+        </Box>
+      )}
     </div>
   );
 }
