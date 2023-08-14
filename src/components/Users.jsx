@@ -18,7 +18,10 @@ function Users({ setSelectedUserId, agentData, setagentData }) {
   const fetchPendingUsers = async () => {
     try {
       const res = await api.get("/api/users/pending");
-      setUserIds(res.data);
+      const sortedUsers = res.data.sort((a, b) => (b.isUrgent ? 1 : -1));
+
+      setUserIds(sortedUsers);
+      // setUserIds(res.data);
       console.log("users fetched!");
     } catch (err) {
       console.log("ERROR_", err);
@@ -87,24 +90,35 @@ const handleRemoveUser = async (userID) => {
           {userIds.map((userId) => (
             <ListItem
               width="100%"
-              key={userId}
+              key={userId.userID}
               display="flex"
               justifyContent="center"
             >
               <Button
                 width="20rem"
-                colorScheme={myUsers.includes(userId) ? "green" : "teal"}
+                colorScheme="teal"
                 margin="0.5rem"
-                onClick={() => handleUserClick(userId)}
+                onClick={() => handleUserClick(userId.userID)}
               >
-                {myUsers.includes(userId) ? "Added" : "Add"} User {userId}
+                User {userId.userID}
                 <Button
                   marginLeft="1rem"
                   colorScheme="red"
-                  onClick={() => handleAddUser(userId)}
+                  onClick={() => handleAddUser(userId.userID)}
                 >
-                  +
+                  {userId.isResolved? "RESOLVED": "+"}
                 </Button>
+                {userId.isUrgent && (
+                  <Box
+                    width="1rem"
+                    height="1rem"
+                    borderRadius="50%"
+                    ml="5"
+                    backgroundColor="blue"
+                  >
+                    &nbsp;{" "}
+                  </Box>
+                )}
               </Button>
             </ListItem>
           ))}
@@ -118,7 +132,7 @@ const handleRemoveUser = async (userID) => {
           flexDirection="column"
           justifyContent="center"
         >
-          {myUsers.map((user) => (
+          {agentData.usersAccepted.map((user) => (
             <ListItem
               width="100%"
               key={user.userID}
@@ -132,13 +146,7 @@ const handleRemoveUser = async (userID) => {
                 onClick={() => handleUserClick(user.userID)}
               >
                 My User {user.userID}
-                <Button
-                  marginLeft="1rem"
-                  colorScheme="red"
-                  onClick={() => handleRemoveUser(user.userID)}
-                >
-                  X
-                </Button>
+                {user.isUrgent && <Box width='1rem' height='1rem' borderRadius='50%' ml='5' backgroundColor='blue'> &nbsp;</Box>}
               </Button>
             </ListItem>
           ))}
@@ -150,7 +158,7 @@ const handleRemoveUser = async (userID) => {
   return (
     <Box
       width="35vw"
-      border="1px solid red"
+      // border="1px solid red"
       display="flex"
       flexDirection="column"
       justifyContent="center"
