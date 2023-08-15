@@ -88,7 +88,7 @@ const handleRemoveUser = async (userID) => {
           justifyContent="center"
         >
           {userIds.map((userId) => (
-            <ListItem
+            userId.userID!="null" && <ListItem
               width="100%"
               key={userId.userID}
               display="flex"
